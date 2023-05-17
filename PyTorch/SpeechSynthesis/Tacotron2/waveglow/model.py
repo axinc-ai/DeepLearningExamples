@@ -25,7 +25,7 @@
 #
 # *****************************************************************************
 import torch
-torch._C._jit_set_autocast_mode(False)
+#torch._C._jit_set_autocast_mode(False)
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
@@ -54,7 +54,7 @@ class Invertible1x1Conv(torch.nn.Module):
                                     bias=False)
 
         # Sample a random orthonormal matrix to initialize weights
-        W = torch.linalg.qr(torch.FloatTensor(c, c).normal_())[0]
+        W = torch.qr(torch.FloatTensor(c, c).normal_())[0]
 
         # Ensure determinant is 1.0 not -1.0
         if torch.det(W) < 0:
