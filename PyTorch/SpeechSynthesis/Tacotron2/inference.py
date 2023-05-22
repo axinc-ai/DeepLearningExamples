@@ -120,7 +120,13 @@ def load_and_setup_model(model_name, parser, checkpoint, fp16_run, cpu_run,
         if cpu_run:
             state_dict = torch.load(checkpoint, map_location=torch.device('cpu'))['state_dict']
         else:
-            state_dict = torch.load(checkpoint)['state_dict']
+            if "nvidia_waveglow256pyt_fp16" in checkpoint:
+                state_dict = torch.load(checkpoint)['state_dict'] # old format
+            else:
+                sys.path.append("./ax") # new format
+                import glow
+                model = torch.load(checkpoint)['model']
+                state_dict = model.state_dict()
         if checkpoint_from_distributed(state_dict):
             state_dict = unwrap_distributed(state_dict)
 
