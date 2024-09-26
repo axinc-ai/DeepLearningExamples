@@ -232,7 +232,7 @@ def test_inference(encoder, decoder_iter, postnet):
 
     print("Running Tacotron2 Encoder")
     with torch.no_grad():
-        memory, processed_memory, lens = encoder(sequences, sequence_lengths)
+        memory, processed_memory, lens = encoder(sequences, sequence_lengths.cpu())
 
     print("Running Tacotron2 Decoder")
     device = memory.device
@@ -303,7 +303,7 @@ def main():
 
     sequences = torch.randint(low=0, high=148, size=(1,50),
                              dtype=torch.long).cuda()
-    sequence_lengths = torch.IntTensor([sequences.size(1)]).cuda().long()
+    sequence_lengths = torch.IntTensor([sequences.size(1)]).long()#cuda().long()
     dummy_input = (sequences, sequence_lengths)
 
     encoder = Encoder(tacotron2)
@@ -325,7 +325,7 @@ def main():
     memory = torch.randn((1,sequence_lengths[0],512)).cuda() #encoder_outputs
     if args.fp16:
         memory = memory.half()
-    memory_lengths = sequence_lengths
+    memory_lengths = sequence_lengths.cuda()
     # initialize decoder states for dummy_input
     decoder_input = tacotron2.decoder.get_go_frame(memory)
     mask = get_mask_from_lengths(memory_lengths)
